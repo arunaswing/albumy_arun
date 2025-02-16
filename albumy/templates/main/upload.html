@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dropzone.min.css') }}" type="text/css">
+    {{ dropzone.style('margin: 20px 0; border: 2px dashed #0087F7; min-height: 200px;') }}
+    <style>
+        .description-field {
+            margin-top: 20px;
+        }
+        .description-field textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .button-group {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .button-group .btn {
+            margin-left: 10px;
+        }
+        .help-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Upload</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Upload Section -->
+            <h4>Step 1: Upload Your Photo</h4>
+            <p class="help-text">Drag and drop your photo into the box below or click to select a file.</p>
+            {{ dropzone.create(action='main.upload') }}
+
+            <!-- Description Section -->
+            <div class="description-field">
+                <h4>Step 2: Add a Description (Optional)</h4>
+                <p class="help-text">Enter a description for your photo. If you leave this blank, an AI-generated description will be added.</p>
+                <textarea name="description" placeholder="Enter a description for your photo (optional)"></textarea>
+            </div>
+
+            <!-- Button Group -->
+            <div class="button-group">
+                <button id="submit-btn" class="btn btn-primary">
+                    <span class="oi oi-cloud-upload"></span> Submit
+                </button>
+                <a class="btn btn-light" href="{{ url_for('user.index', username=current_user.username) }}">
+                    <span class="oi oi-check"></span> Done
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/dropzone.min.js') }}"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">  <!-- Add CSRF token -->
+    <script>
+        // Initialize Dropzone
+        Dropzone.options.myDropzone = {
+            autoProcessQueue: false,  // Disable auto-processing
+            paramName: "file",  // Ensure this matches 'file' in request.files.get('file')
+            init: function() {
+                var myDropzone = this;
+
+                // Add the CSRF token and description to the form data
+                myDropzone.on("sending", function(file, xhr, formData) {
+                    var csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+                    formData.append("csrf_token", csrfToken);
+
+                    var description = document.querySelector('textarea[name="description"]').value;
+                    formData.append("description", description);
+                    console.log("Description sent:", description);  // Debug: Check the description value
+                });
+
+                // Handle successful upload
+                myDropzone.on("success", function(file, response) {
+                    flash('Photo uploaded successfully!', 'success');
+                    window.location.href = "{{ url_for('main.index') }}";
+                });
+
+                // Handle upload errors
+                myDropzone.on("error", function(file, errorMessage) {
+                    flash('Upload failed: ' + errorMessage, 'danger');
+                });
+
+                // Submit button click handler
+                document.getElementById('submit-btn').addEventListener('click', function() {
+                    if (myDropzone.getQueuedFiles().length > 0) {
+                        myDropzone.processQueue();  // Process the queue
+                    } else {
+                        flash('No file selected.', 'warning');
+                    }
+                });
+            }
+        };
+    </script>
+{% endblock %}
