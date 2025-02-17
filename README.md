@@ -13,11 +13,11 @@ Demo: http://albumy.helloflask.com
 
 clone:
 ```
-$ git clone https://github.com/greyli/albumy.git
+$ git clone https://github.com/arunaswing/albumy_arun.git
 $ cd albumy
 ```
 create & activate virtual env then install dependency:
-
+install python version 3.8.20 in the virtual environment.
 with venv/virtualenv + pip:
 ```
 $ python -m venv env  # use `virtualenv env` for Python2, use `python3 ...` for Python3 on Linux & macOS
@@ -29,6 +29,14 @@ or with Pipenv:
 $ pipenv install --dev
 $ pipenv shell
 ```
+For the ML component, we will be using Azure API:
+1. Create an azure account and then setup the Azure Computer Vision API. Key and Endpoint will be generated.
+2. Create an .env file and store the endpoint and the key.
+```
+ENDPOINT="[your personal endpoint]"
+KEY="[your personal key]"
+```
+
 generate fake data then run:
 ```
 $ flask forge
