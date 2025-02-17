@@ -17,7 +17,9 @@ $ git clone https://github.com/arunaswing/albumy_arun.git
 $ cd albumy
 ```
 create & activate virtual env then install dependency:
+
 install python version 3.8.20 in the virtual environment.
+
 with venv/virtualenv + pip:
 ```
 $ python -m venv env  # use `virtualenv env` for Python2, use `python3 ...` for Python3 on Linux & macOS
